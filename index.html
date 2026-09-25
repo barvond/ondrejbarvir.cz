@@ -26,7 +26,7 @@
   :root {
     --paper: #FAFBFC; --ink: #1C2230; --muted: #5B6472;
     --rule: #D9DDE3; --accent: #1F4D3F; --accent-soft: #E3ECE8;
-    --bar: rgba(250, 251, 252, 0.88);
+    --band: #1C2230; --band-ink: #E6E9EE; --band-muted: #A9B2BF; --band-accent: #8CC4AE; --band-rule: #333C4B;
     box-sizing: border-box;
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
@@ -34,13 +34,13 @@
     :root:not([data-theme="light"]) {
       --paper: #151A22; --ink: #E6E9EE; --muted: #9AA3B0;
       --rule: #2C3440; --accent: #8CC4AE; --accent-soft: #1E2C28;
-      --bar: rgba(21, 26, 34, 0.88);
+      --band: #0E1218; --band-rule: #262E3A;
     }
   }
   :root[data-theme="dark"] {
     --paper: #151A22; --ink: #E6E9EE; --muted: #9AA3B0;
     --rule: #2C3440; --accent: #8CC4AE; --accent-soft: #1E2C28;
-    --bar: rgba(21, 26, 34, 0.88);
+    --band: #0E1218; --band-rule: #262E3A;
   }
   *, *::before, *::after { box-sizing: inherit; }
   html { scroll-behavior: smooth; }
@@ -65,44 +65,46 @@
   .topbar {
     position: sticky; top: 0; z-index: 10;
     padding-top: env(safe-area-inset-top, 0px);
-    background: var(--bar);
-    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s;
+    background: var(--band); color: var(--band-ink);
+    box-shadow: 0 1px 0 var(--band-rule);
   }
-  .topbar.scrolled { border-bottom-color: var(--rule); }
   .topbar-inner {
-    max-width: 58rem; margin: 0 auto; padding: 0.75rem 1.5rem;
-    display: flex; align-items: center; gap: 1.5rem;
+    max-width: 62rem; margin: 0 auto; padding: 0.85rem 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem; position: relative;
   }
   .brand {
-    font-weight: 600; font-size: 1.0625rem; color: var(--ink); text-decoration: none;
-    white-space: nowrap; opacity: 0; transition: opacity 0.25s; pointer-events: none;
+    font-weight: 500; font-size: 1.25rem; letter-spacing: -0.01em;
+    color: var(--band-ink); text-decoration: none; white-space: nowrap;
   }
-  .topbar.scrolled .brand { opacity: 1; pointer-events: auto; }
-  .nav { display: flex; gap: 1.35rem; margin: 0 0 0 auto; padding: 0; list-style: none; }
+  .brand::before { content: "§"; color: var(--band-accent); margin-right: 0.45rem; }
+  .nav { display: flex; gap: 1.5rem; margin: 0 0 0 auto; padding: 0; list-style: none; }
   .nav a {
-    color: var(--muted); text-decoration: none; font-size: 1rem;
-    padding: 0.25rem 0; border-bottom: 1.5px solid transparent;
+    color: var(--band-muted); text-decoration: none; font-size: 1rem;
+    padding: 0.25rem 0; border-bottom: 1.5px solid transparent; transition: color 0.15s;
   }
-  .nav a:hover { color: var(--ink); }
-  .nav a.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav a:hover { color: var(--band-ink); }
+  .nav a.active { color: var(--band-ink); border-bottom-color: var(--band-accent); }
+  .topbar a:focus-visible, .topbar button:focus-visible { outline-color: var(--band-accent); }
   .lang {
-    font: inherit; font-size: 0.9375rem; color: var(--ink); cursor: pointer;
-    background: none; border: 1px solid var(--rule); border-radius: 999px;
+    font: inherit; font-size: 0.9375rem; cursor: pointer;
+    background: none; border: 1px solid var(--band-rule); border-radius: 999px;
     padding: 0.2rem 0.3rem; display: inline-flex; gap: 0.15rem; flex-shrink: 0;
   }
-  .lang span { padding: 0.05rem 0.55rem; border-radius: 999px; color: var(--muted); }
+  .lang span { padding: 0.05rem 0.55rem; border-radius: 999px; color: var(--band-muted); }
   html[data-lang="cs"] .lang .l-cs, html[data-lang="en"] .lang .l-en {
-    background: var(--accent); color: var(--paper);
+    background: var(--band-accent); color: var(--band);
   }
   .menu-btn {
-    display: none; font: inherit; font-size: 1rem; color: var(--ink);
-    background: none; border: 1px solid var(--rule); border-radius: 4px;
+    display: none; font: inherit; font-size: 1rem; color: var(--band-ink);
+    background: none; border: 1px solid var(--band-rule); border-radius: 4px;
     padding: 0.3rem 0.7rem; cursor: pointer; margin-left: auto;
   }
+  .progress {
+    position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%;
+    background: var(--band-accent); transform-origin: 0 50%; transform: scaleX(0);
+  }
 
-  .page { max-width: 46rem; margin: 0 auto; padding: 3.5rem 1.5rem 4rem 5.5rem; }
+  .page { max-width: 46rem; margin: 0 auto; padding: 4.5rem 1.5rem 2rem 5.5rem; }
 
   .hero { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start; margin-bottom: 4.5rem; }
   .hero h1 {
@@ -111,9 +113,11 @@
   }
   .hero .role { font-size: 1.375rem; font-style: italic; color: var(--muted); margin: 0 0 2rem; max-width: 30rem; }
   .hero .links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; margin: 0; padding: 0; list-style: none; }
+  .hero { padding-bottom: 3rem; border-bottom: 1px solid var(--rule); }
   .portrait {
     width: 9.5rem; height: 9.5rem; border-radius: 50%; object-fit: cover;
     object-position: 45% 30%; display: block; margin-top: 0.5rem; background: var(--rule);
+    box-shadow: 0 0 0 1px var(--paper), 0 0 0 5px var(--accent);
   }
 
   section { position: relative; margin-bottom: 3.75rem; scroll-margin-top: 5.5rem; }
@@ -157,11 +161,30 @@
   .pairs dt { color: var(--muted); font-size: 1rem; padding-top: 0.15rem; }
   .pairs dd { margin: 0; }
 
-  .contact-mail {
-    display: inline-block; font-size: 1.5rem; padding: 0.35rem 0.75rem;
-    margin-left: -0.75rem; background: var(--accent-soft); border-radius: 4px;
+  /* Tmavý pás dole s kontaktem */
+  .footband {
+    background: var(--band); color: var(--band-ink);
+    padding: 4.5rem 0 calc(2rem + env(safe-area-inset-bottom, 0px));
+    margin-top: 2rem;
   }
-  footer { color: var(--muted); font-size: 0.9375rem; margin-top: 5rem; }
+  .footband-inner { max-width: 46rem; margin: 0 auto; padding: 0 1.5rem 0 5.5rem; }
+  .footband section { margin-bottom: 3.5rem; }
+  .footband .par { color: var(--band-accent); }
+  .footband h2 { font-size: clamp(2rem, 5vw, 2.75rem); font-weight: 500; letter-spacing: -0.015em; margin-bottom: 1rem; }
+  .footband p { color: var(--band-muted); }
+  .contact-mail {
+    display: inline-block; font-size: clamp(1.35rem, 4vw, 1.75rem); color: var(--band-ink);
+    text-decoration: none; border-bottom: 2px solid var(--band-accent); padding-bottom: 0.1rem;
+  }
+  .contact-mail:hover { color: var(--band-accent); }
+  .contact-mail:focus-visible { outline-color: var(--band-accent); }
+  .foot-meta {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 1.5rem;
+    border-top: 1px solid var(--band-rule); padding-top: 1.25rem;
+    color: var(--band-muted); font-size: 0.9375rem;
+  }
+  .foot-meta a { color: var(--band-muted); text-decoration: none; }
+  .foot-meta a:hover { color: var(--band-ink); }
 
   /* Jemné objevení sekcí (jen když běží JS a uživatel nemá omezený pohyb) */
   @media (prefers-reduced-motion: no-preference) {
@@ -174,23 +197,30 @@
     .nav {
       display: none; position: absolute; left: 0; right: 0; top: 100%;
       flex-direction: column; gap: 0; margin: 0; padding: 0.5rem 1.5rem 1rem;
-      background: var(--paper); border-bottom: 1px solid var(--rule);
+      background: var(--band); border-bottom: 1px solid var(--band-rule);
     }
     .nav.open { display: flex; }
     .nav a { display: block; padding: 0.6rem 0; font-size: 1.0625rem; border-bottom: 0; }
+    .nav a.active { color: var(--band-accent); }
   }
   @media (max-width: 40rem) {
-    .page { padding: 2.5rem 1.25rem 3rem; }
+    .page { padding: 2.5rem 1.25rem 1.5rem; }
+    .footband { padding-top: 3.5rem; }
+    .footband-inner { padding: 0 1.25rem; }
+    .brand { font-size: 1.125rem; }
     .topbar-inner { padding: 0.65rem 1.25rem; gap: 0.75rem; }
     .hero { grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3.5rem; }
-    .portrait { order: -1; width: 7rem; height: 7rem; margin-top: 0; }
+    .hero { padding-bottom: 3rem; border-bottom: 1px solid var(--rule); }
+  .portrait { order: -1; width: 7rem; height: 7rem; margin-top: 0; }
     .par { position: static; display: inline; margin-right: 0.35em; }
     .entries li, .pairs { grid-template-columns: 1fr; }
     .pairs dd { margin-bottom: 0.5rem; }
   }
   @media print {
     :root { --paper: #fff; --ink: #000; --muted: #444; --accent: #000; --accent-soft: transparent; }
-    .topbar, .hero .links, footer { display: none; }
+    .topbar, .hero .links, .foot-meta { display: none; }
+    .footband { background: none; color: #000; padding: 0; }
+    .footband p, .contact-mail { color: #000; }
     .page { padding: 0; max-width: none; }
     section { break-inside: avoid; margin-bottom: 2rem; }
     .reveal { opacity: 1 !important; transform: none !important; }
@@ -219,6 +249,7 @@
       <span class="l-cs">CZ</span><span class="l-en">EN</span>
     </button>
   </div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
 </header>
 
 <main class="page" id="top">
@@ -423,15 +454,23 @@
     </dl>
   </section>
 
-  <section id="kontakt" class="reveal">
-    <span class="par" aria-hidden="true">§ 6</span>
-    <h2><span class="cs">Kontakt</span><span class="en">Contact</span></h2>
-    <p><span class="cs">Nejrychleji mě zastihnete e-mailem.</span><span class="en">The quickest way to reach me is by email.</span></p>
-    <a class="contact-mail" href="mailto:barvond@gmail.com">barvond@gmail.com</a>
-  </section>
-
-  <footer><p>© 2026 Ondřej Barvíř</p></footer>
 </main>
+
+<footer class="footband">
+  <div class="footband-inner">
+    <section id="kontakt" class="reveal">
+      <span class="par" aria-hidden="true">§ 6</span>
+      <h2><span class="cs">Kontakt</span><span class="en">Contact</span></h2>
+      <p><span class="cs">Nejrychleji mě zastihnete e-mailem.</span><span class="en">The quickest way to reach me is by email.</span></p>
+      <a class="contact-mail" href="mailto:barvond@gmail.com">barvond@gmail.com</a>
+    </section>
+    <div class="foot-meta">
+      <span>© 2026 Ondřej Barvíř</span>
+      <a href="#top"><span class="cs">Zpět nahoru ↑</span><span class="en">Back to top ↑</span></a>
+    </div>
+  </div>
+</footer>
+
 
 <script>
 (function () {
@@ -468,12 +507,16 @@
   });
 
   // Lišta: ohraničení a jméno po odscrollování
-  var bar = document.getElementById('topbar');
-  function onScroll() { bar.classList.toggle('scrolled', window.scrollY > 120); }
+  var prog = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.transform = 'scaleX(' + (h > 0 ? Math.min(window.scrollY / h, 1) : 0) + ')';
+    if (h > 0 && window.scrollY >= h - 4 && window.markActive) window.markActive('kontakt');
+  }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  var sections = document.querySelectorAll('main section');
+  var sections = document.querySelectorAll('main section, .footband section');
   if ('IntersectionObserver' in window) {
     // Jemné objevení sekcí
     var io = new IntersectionObserver(function (entries) {
@@ -484,13 +527,12 @@
     // Zvýraznění aktuální sekce v menu
     var links = {};
     nav.querySelectorAll('a').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+    window.markActive = function (id) {
+      Object.keys(links).forEach(function (k) { links[k].classList.remove('active'); });
+      if (links[id]) links[id].classList.add('active');
+    };
     var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) {
-          Object.keys(links).forEach(function (k) { links[k].classList.remove('active'); });
-          if (links[en.target.id]) links[en.target.id].classList.add('active');
-        }
-      });
+      entries.forEach(function (en) { if (en.isIntersecting) window.markActive(en.target.id); });
     }, { rootMargin: '-40% 0px -55% 0px' });
     sections.forEach(function (s) { spy.observe(s); });
   } else {
